@@ -15,6 +15,14 @@ class CreateArticleCategoriesTable extends Migration
     {
         Schema::create('article_categories', function (Blueprint $table) {
             $table->increments('id');
+            $table->text('title');
+            $table->text('slug');
+            $table->text('description');
+            $table->text('short_description');
+            $table->text('featured_image');
+            $table->boolean('active');
+            $table->text('tag_title');
+            $table->text('tag_description');
             $table->timestamps();
         });
     }
