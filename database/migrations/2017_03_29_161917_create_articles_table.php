@@ -16,14 +16,19 @@ class CreateArticlesTable extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->increments('id');
             $table->text('title');
-            $table->text('slug');
-            $table->text('description');
-            $table->text('short_description');
-            $table->text('featured_image');
-            $table->boolean('active');
-            $table->text('tag_title');
-            $table->text('tag_description');
+            $table->string('slug')->unique();
+            $table->text('description')->nullable();
+            $table->text('short_description')->nullable();
+            $table->integer('featured_image_id')->unsigned()->nullable();
+            $table->boolean('active')->default(true);
+            $table->text('tag_title')->nullable();
+            $table->text('tag_description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::table('articles', function (Blueprint $table) {
+            $table->foreign('featured_image_id')->references('id')->on('files');
         });
     }
 
@@ -34,6 +39,9 @@ class CreateArticlesTable extends Migration
      */
     public function down()
     {
+        Schema::table('articles', function (Blueprint $table) {
+            $table->dropForeign(['featured_image_id']);
+        });
         Schema::dropIfExists('articles');
     }
 }

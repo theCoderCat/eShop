@@ -18,12 +18,16 @@ class CreateReviewsTable extends Migration
             $table->text('title');
             $table->text('content');
             $table->integer('rating');
-            $table->integer('product_id');
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->integer('product_id')->unsigned();
             $table->text('customer_name')->nullable();
             $table->text('customer_email')->nullable();
-            $table->boolean('active');
+            $table->boolean('active')->default(false);
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
     }
 
@@ -34,6 +38,9 @@ class CreateReviewsTable extends Migration
      */
     public function down()
     {
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->dropForeign(['product_id']);
+        });
         Schema::dropIfExists('reviews');
     }
 }

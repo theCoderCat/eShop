@@ -28,6 +28,7 @@ class CreateStoreInfoTable extends Migration
             $table->text('googleplus')->nullable();
             $table->text('instagram')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

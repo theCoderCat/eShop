@@ -1,9 +1,15 @@
 
 // Fonts
-@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500');
 
 // Variables
 @import "variables";
 
 // Bootstrap
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import 'node_modules/sweetalert/dev/sweetalert';
+
+@import "sidebar";
+@import "content";
+@import "product";
+@import "brand";
