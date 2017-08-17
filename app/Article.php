@@ -8,6 +8,15 @@ use App\eShopBaseModel;
 class Article extends eShopBaseModel
 {
     //
+    protected $fillable = [
+        'title',
+        'related_products',
+        'description_md',
+        'short_description',
+        'featured_image_id',
+        'slug',
+        'tags',
+    ];
 
     public function setRelatedProductsAttribute($value)
     {

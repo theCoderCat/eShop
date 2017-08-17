@@ -112,6 +112,7 @@ class ProductController extends Controller
     {
         //
         $newItem = parent::store($request);
+        $success = $newItem != false;
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
                 'success' => $success,

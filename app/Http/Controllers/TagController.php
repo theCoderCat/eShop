@@ -27,9 +27,10 @@ class TagController extends Controller
 
     public function getAll() {
         $all = parent::getAll();
+        $success = !empty($all);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
-                'success' => true,
+                'success' => $success,
                 'allItems' => $all,
             ]);
         }
@@ -55,6 +56,7 @@ class TagController extends Controller
     {
         $this->dataToSave['sanitized'] = $request->name;
         $newItem = parent::store($request);
+        $success = $newItem != false;
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
                 'success' => $success,

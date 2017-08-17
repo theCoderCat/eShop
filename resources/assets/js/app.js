@@ -19,6 +19,7 @@ const ProductForm = require('./components/ProductForm.vue');
 const ProductList = require('./components/ProductList.vue');
 const BrandList = require('./components/BrandList.vue');
 const ArticleForm = require('./components/ArticleForm.vue');
+const ArticleList = require('./components/ArticleList.vue');
 /* Define components - END */
 
 const routes = [{
@@ -55,13 +56,27 @@ const routes = [{
     props: {
         mode: "create"
     }
-},];
+}, {
+    name: 'article-list',
+    path: '/article/',
+    component: ArticleList,
+}, {
+    name: 'edit-article',
+    path: '/article/:articleId',
+    component: ArticleForm,
+    props: (route) => ({
+        articleId: route.params.articleId,
+        mode: "edit"
+    })
+}];
 
 import VueRouter from 'vue-router';
+
 Vue.use(VueRouter);
 window.router = new VueRouter({
     routes,
-    linkActiveClass: 'active'
+    linkExactActiveClass: 'active',
+    base: '/'
 });
 
 const sidebarLinks = [
@@ -76,8 +91,18 @@ const sidebarLinks = [
             }, {
                 title: 'Brand',
                 routeName: 'brands',
+            }
+        ]
+    },{
+        title: "Article Management",
+        routeName: false,
+        isActive: false,
+        submenu: [
+            {
+                title: 'Articles',
+                routeName: 'article-list',
             }, {
-                title: 'Create Article',
+                title: 'Create',
                 routeName: 'create-article',
             }
         ]
@@ -106,6 +131,7 @@ const api = {
     'updateBrand': 'brands/update/',
     'getAllProducts': 'products',
     'createArticle': 'articles/store',
+    'updateArticle': 'articles/update',
     'getAllArticles': 'articles',
     'getArticleById': 'articles/id',
     'getAllArticleCategories': 'article-categories/',
@@ -122,7 +148,7 @@ var App = new Vue({
     },
 
     methods: {
-        toggleSubmenu: function(index) {
+        toggleSubmenu: function (index) {
             let _this = this;
             if (this.sidebarLinks[index].isActive) {
                 this.sidebarLinks[index].isActive = false;

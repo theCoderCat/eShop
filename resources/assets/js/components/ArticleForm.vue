@@ -10,19 +10,20 @@
             <!--main-->
             <div class="col-md-8">
                 <div class="panel panel-default">
-                    <div class="panel-heading">New Article</div>
+                    <div class="panel-heading" v-if="mode == 'create'">New Article</div>
+                    <div class="panel-heading" v-if="mode == 'edit'">Edit Article</div>
                     <div class="panel-body">
                         <form action="" @submit="createArticle">
                             <div class="row">
                                 <div class="form-group col-sm-6">
-                                <label for="" class="label-control">title</label>
-                                <input type="text" class="form-control" v-model="article.title">
-                            </div>
+                                    <label for="" class="label-control">Title</label>
+                                    <input type="text" class="form-control" v-model="article.title">
+                                </div>
 
-                            <div class="form-group col-sm-6">
-                                <label for="" class="label-control">Slug</label>
-                                <input type="text" class="form-control" v-model="article.slug">
-                            </div>
+                                <div class="form-group col-sm-6">
+                                    <label for="" class="label-control">Slug</label>
+                                    <input type="text" class="form-control" v-model="article.slug">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="" class="label-control">Short Description</label>
@@ -56,7 +57,8 @@
                 <div class="form-group xs-mb-15">
                     <label for="" class="label-control">Tags</label>
                     <label class="custom-control custom-checkbox" v-for="tag in tags">
-                        <input type="checkbox" class="custom-control-input" :value="tag.sanitized" v-model="article.tags">
+                        <input type="checkbox" class="custom-control-input" :value="tag.sanitized"
+                               v-model="article.tags">
                         <span class="custom-control-indicator"></span>
                         <span class="custom-control-description">{{tag.name}}</span>
                     </label>
@@ -68,7 +70,8 @@
                 <div class="form-group xs-mb-15">
                     <label for="" class="label-control">Related Products</label>
                     <label class="custom-control custom-checkbox" v-for="p in products">
-                        <input type="checkbox" class="custom-control-input" :value="p.id" v-model="article.related_products">
+                        <input type="checkbox" class="custom-control-input" :value="p.id"
+                               v-model="article.related_products">
                         <span class="custom-control-indicator"></span>
                         <span class="custom-control-description">{{p.name}}</span>
                     </label>
@@ -77,12 +80,8 @@
                 <div class="form-group">
                     <label for="product-featured-img" class="label-control">Featured Image</label>
                     <div class="input-group xs-mb-15">
-                        <select class="form-control" name="product-featured-img" v-model="article.featured_image_id">
-                            <option v-for="i in images" :value="i.id">{{i.original_name}}</option>
-                        </select>
-                        <span class="input-group-btn">
-                            <button type="button" class="btn btn-primary" @click="triggerNewImgInput">+</button>
-                        </span>
+                        <ImagesList v-bind:selected-image-id="article.featured_image_id"
+                                    v-model="article.featured_image_id" type="single"></ImagesList>
                     </div>
                 </div>
             </div>
@@ -104,20 +103,18 @@
                     </div>
                     <div class="form-group">
                         <label for="username" class="label-control">Category Featured Image</label>
-                        <select class="form-control" v-model="newCat.featured_image_id">
-                            <option v-for="i in images" :value="i.id">{{i.original_name}}</option>
-                        </select>
-                        <span class="input-group-btn">
-                            <button type="button" class="btn btn-primary" @click="triggerNewImgInput">+</button>
-                        </span>
+                        <ImagesList v-bind:selected-image-id="newCat.featured_image_id"
+                                    v-model="newCat.featured_image_id" type="single"></ImagesList>
                     </div>
                     <div class="form-group">
                         <label for="desc" class="label-control">Description</label>
-                        <textarea type="text" name="desc" class="form-control editor" v-model="newCat.description_md"></textarea>
+                        <textarea type="text" name="desc" class="form-control editor"
+                                  v-model="newCat.description_md"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="desc" class="label-control">Short Description</label>
-                        <textarea type="text" name="desc" class="form-control" v-model="newCat.short_description"></textarea>
+                        <textarea type="text" name="desc" class="form-control"
+                                  v-model="newCat.short_description"></textarea>
                     </div>
                 </form>
             </div>
@@ -126,11 +123,31 @@
                 <button class="btn btn-default" @click="discardCategory">Cancel</button>
             </div>
         </modal>
-        <input type="file" @change="uploadImage" class="new-img-input hidden">
     </div>
 </template>
 <script>
     export default {
+        beforeRouteUpdate(to, from, next) {
+            switch (this.mode) {
+                case 'create':
+                    this.article = {
+                        title: '',
+                        description_md: '',
+                        short_description: '',
+                        category_id: '',
+                        featured_image_id: '',
+                        tags: [],
+                        slug: '',
+                        related_products: [],
+                        featured: false
+                    };
+                    break;
+                case 'edit':
+                default:
+                    this.fetchArticle();
+                    break;
+            }
+        },
         mounted() {
             console.log('Product Form ready.');
             this.editor = new simplemde({
@@ -152,9 +169,10 @@
             if (this.mode === 'edit') this.fetchArticle();
         },
         components: {
-            Modal
+            Modal,
+            ImagesList
         },
-        props: ['mode', 'productId'],
+        props: ['mode', 'articleId'],
         data() {
             return {
                 loading: false,
@@ -167,9 +185,8 @@
                 //                translateEditor: null,
                 categories: [],
                 tags: [],
-                products: [],
                 images: [],
-                newImg: null,
+                products: [],
                 newTag: {
                     name: ""
                 },
@@ -233,32 +250,6 @@
                         alert('cannot fetch categories');
                     });
             },
-            fetchBrands() {
-                //
-                axios.get(this.api.getAllBrands)
-                    .then((res) => {
-                        // success
-                        this.brands = res.data.brands;
-                    })
-                    .catch((error) => {
-                        //
-                        console.log(error);
-                        alert('cannot fetch brands');
-                    });
-            },
-            fetchImages() {
-                // get all images
-                axios.get(this.api.getAllImages)
-                    .then((res) => {
-                        // success
-                        this.images = res.data.files;
-                    })
-                    .catch((error) => {
-                        //
-                        console.log(error);
-                        alert('cannot fetch images');
-                    });
-            },
             fetchTags() {
                 // get all images
                 axios.get(this.api.getAllTags)
@@ -272,25 +263,17 @@
                         alert('cannot fetch tags');
                     });
             },
-            triggerNewImgInput() {
-                $('.new-img-input').trigger('click');
-            },
-            uploadImage(callback) {
-                // get image data
-                let data = new FormData();
-                data.append('img', document.querySelector('.new-img-input').files[0]);
-                axios.post(this.api.uploadNewImage, data)
+            fetchImages() {
+                // get all images
+                axios.get(this.$root.$data.api.getAllImages)
                     .then((res) => {
                         // success
-                        this.images.push(res.data.file);
-                        console.log(res);
-                        if (typeof (callback) == 'function') {
-                            callback();
-                        }
+                        this.images = res.data.files;
                     })
                     .catch((error) => {
                         //
                         console.log(error);
+                        swal('error', 'Oh snap!', error);
                     });
             },
             triggerCreateCategory() {
@@ -302,11 +285,12 @@
                     // success
                     if (res.data.success) {
                         // if success, append new category to categories array
-                        this.categories.push(res.data.createdItem);
+                        this.categories.push(res.data.newItem);
                         // select new category as post category
-                        this.article.category_id = res.data.createdItem.id;
+                        this.article.category_id = res.data.newItem.id;
                         this.triggerCreateCategory();
-                    } else {}
+                    } else {
+                    }
                 }).catch((error) => {
                     // error
                     console.log(error);
@@ -325,10 +309,13 @@
             createTag() {
                 axios.post(this.api.createTag, this.newTag)
                     .then((res) => {
+                        console.log(res);
                         // success
-                        this.tags.push(res.data.createdItem);
-                        this.article.tags.push(res.data.createdItem.sanitized);
-                        this.newTag.name = "";
+                        if (res.data.success) {
+                            this.tags.push(res.data.newItem);
+                            this.article.tags.push(res.data.newItem.sanitized);
+                            this.newTag.name = "";
+                        }
                     })
                     .catch((error) => {
                         //
@@ -350,13 +337,13 @@
                     .then((res) => {
                         // success
                         if (res.data.success) {
-                            this.article = res.data.createdItem;
-                            // router.push({
-                            //     name: 'edit-article',
-                            //     params: {
-                            //         articleId: this.article.id
-                            //     }
-                            // });
+                            this.article = res.data.newItem;
+                            router.push({
+                                name: 'edit-article',
+                                params: {
+                                    articleId: this.article.id
+                                },
+                            });
                             swal('Bravo', 'Article has been created successfully', 'success');
                         } else {
                             swal('Fail', 'Something went wrong, article not saved', 'error');
@@ -370,7 +357,7 @@
             updateArticle() {
                 if (!this.validatePost()) return;
                 this.article.description_md = this.editor.value();
-                axios.post(this.api.updateArticle, this.article)
+                axios.post(this.api.updateArticle + '/' + this.articleId, this.article)
                     .then((res) => {
                         // success
                         if (res.data.success) {

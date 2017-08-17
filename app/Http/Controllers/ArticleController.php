@@ -19,6 +19,15 @@ class ArticleController extends Controller
             'related_products',
             'tags',
         ];
+        $this->fieldsToShow = [
+            'title',
+            'slug',
+            'description_md',
+            'short_description',
+            'featured_image_id',
+            'related_products',
+            'tags',
+        ];
     }
     /**
      * Display a listing of the resource.
@@ -69,6 +78,7 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $newItem = parent::store($request);
+        $success = $newItem != false;
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
                 'success' => $success,
@@ -119,7 +129,7 @@ class ArticleController extends Controller
         $item = parent::update($request, $id);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
-                'success' => $item ? true : false,
+                'success' => $item != false,
                 'updatedItem' => $item
             ]);
         }
