@@ -5,11 +5,24 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\eShopBaseModel;
 use App\File;
+use App\Brand;
 
 class Product extends eShopBaseModel
 {
+    protected $fillable = [
+        'brand_id',
+        'category_id',
+        'description_md',
+        'featured_image_id',
+        'images',
+        'name',
+        'slug',
+        'tags',
+        'price',
+        'in_stock'
+    ];
     //
-    protected $appends = ['url'];
+    protected $appends = ['url', 'brand_logo'];
 
     public function setTagsAttribute($value)
     {
@@ -50,6 +63,11 @@ class Product extends eShopBaseModel
     public function brand()
     {
         return $this->belongsTo('App\Brand');
+    }
+
+    public function getBrandLogoAttribute()
+    {
+        return $this->brand_id ? File::find($this->brand->id) : null;
     }
     public function category()
     {

@@ -14,9 +14,10 @@ import moment from 'moment';
 window.swal = require('sweetalert');
 require('bootstrap-datepicker');
 window.Modal = require('./components/Modal.vue');
+window.ImagesList = require('./components/ImagesList.vue');
 window.DatePicker = require('./components/DatePicker.vue');
 window.simplemde = require('simplemde');
-window._ = require('underscore');
+window._ = require('lodash');
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces

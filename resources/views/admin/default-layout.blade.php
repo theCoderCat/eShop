@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
-    <title>eShop - @yield('title')</title>
+    <title>eShop | @yield('title')</title>
     <!-- Bootstrap Core CSS -->
     <!--<link href="/css/bootstrap.min.css" rel="stylesheet">-->
     <!--<link href="/css/bootstrap-extension.css" rel="stylesheet">-->

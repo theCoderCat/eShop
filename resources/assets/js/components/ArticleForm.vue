@@ -3,42 +3,34 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
         <div class="text-right">
             <!--Open User Creating Modal-->
-            <button class="btn btn-primary mb-xs-10" v-if="mode == 'create'" @click="createProduct">Publish</button>
-            <button class="btn btn-primary mb-xs-10" v-if="mode == 'edit'" @click="updateProduct">Save</button>
+            <button class="btn btn-primary mb-xs-10" v-if="mode == 'create'" @click="createArticle">Publish</button>
+            <button class="btn btn-primary mb-xs-10" v-if="mode == 'edit'" @click="updateArticle">Save</button>
         </div>
         <div class="row">
             <!--main-->
             <div class="col-md-8">
                 <div class="panel panel-default">
-                    <div class="panel-heading">New Product</div>
+                    <div class="panel-heading">New Article</div>
                     <div class="panel-body">
-                        <form action="" @submit="createProduct">
+                        <form action="" @submit="createArticle">
                             <div class="row">
                                 <div class="form-group col-sm-6">
-                                <label for="" class="label-control">Name</label>
-                                <input type="text" class="form-control" v-model="product.name">
+                                <label for="" class="label-control">title</label>
+                                <input type="text" class="form-control" v-model="article.title">
                             </div>
 
                             <div class="form-group col-sm-6">
                                 <label for="" class="label-control">Slug</label>
-                                <input type="text" class="form-control" v-model="product.slug">
+                                <input type="text" class="form-control" v-model="article.slug">
                             </div>
                             </div>
-                            
-                            <div class="row">
-                                <div class="form-group col-sm-6">
-                                <label for="" class="label-control">Price</label>
-                                <input type="number" class="form-control" v-model="product.price">
+                            <div class="form-group">
+                                <label for="" class="label-control">Short Description</label>
+                                <textarea class="form-control" v-model="article.short_description"></textarea>
                             </div>
-                            <div class="form-group col-sm-6">
-                                <label for="" class="label-control">In stock</label>
-                                <input type="number" class="form-control" v-model="product.in_stock">
-                            </div>
-                            </div>
-
                             <div class="form-group">
                                 <label for="" class="label-control">Content</label>
-                                <textarea class="form-control" v-model="product.description_md" id="editor"></textarea>
+                                <textarea class="form-control" v-model="article.description_md" id="editor"></textarea>
                             </div>
                         </form>
                     </div>
@@ -47,22 +39,11 @@
 
             <!--side-->
             <div class="col-md-4">
-                <!---->
-                <div class="form-group">
-                    <label for="" class="label-control">Brands</label>
-
-                    <div class="input-group xs-mb-15">
-                        <select class="form-control" v-model="product.brand_id">
-                            <option v-for="b in brands" :value="b.id">{{b.name}}</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div class="form-group">
                     <label for="" class="label-control">Category</label>
 
                     <div class="input-group xs-mb-15">
-                        <select class="form-control" v-model="product.category_id">
+                        <select class="form-control" v-model="article.category_id">
                             <option v-for="c in categories" :value="c.id">{{c.name}}</option>
                         </select>
                         <span class="input-group-btn">
@@ -75,7 +56,7 @@
                 <div class="form-group xs-mb-15">
                     <label for="" class="label-control">Tags</label>
                     <label class="custom-control custom-checkbox" v-for="tag in tags">
-                        <input type="checkbox" class="custom-control-input" :value="tag.sanitized" v-model="product.tags">
+                        <input type="checkbox" class="custom-control-input" :value="tag.sanitized" v-model="article.tags">
                         <span class="custom-control-indicator"></span>
                         <span class="custom-control-description">{{tag.name}}</span>
                     </label>
@@ -84,32 +65,26 @@
                     </form>
                 </div>
 
-                <div class="form-group">
-                    <label for="product-featured-img" class="label-control">Featured Image</label>
-                    <ImagesList v-bind:selected-image-id="product.featured_image_id" v-model="product.featured_image_id" type="single"></ImagesList>
-
-                    <!--<div class="input-group xs-mb-15">-->
-                        <!--<select class="form-control" name="product-featured-img" v-model="product.featured_image_id">-->
-                            <!--<option v-for="i in images" :value="i.id">{{i.original_name}}</option>-->
-                        <!--</select>-->
-                        <!--<span class="input-group-btn">-->
-                            <!--<button type="button" class="btn btn-primary" @click="triggerNewImgInput">+</button>-->
-                        <!--</span>-->
-                    <!--</div>-->
+                <div class="form-group xs-mb-15">
+                    <label for="" class="label-control">Related Products</label>
+                    <label class="custom-control custom-checkbox" v-for="p in products">
+                        <input type="checkbox" class="custom-control-input" :value="p.id" v-model="article.related_products">
+                        <span class="custom-control-indicator"></span>
+                        <span class="custom-control-description">{{p.name}}</span>
+                    </label>
                 </div>
 
-                <label for="product-img" class="label-control">Product Images</label>
-                <ImagesList v-bind:selected-image-id="product.images" v-model="product.images" type="multiple"></ImagesList>
-                <!--<div class="form-group xs-mb-15 product-img-list">-->
-                    <!--<label class="custom-control custom-checkbox" v-for="img in images">-->
-                        <!--<input type="checkbox" class="custom-control-input" :value="img.id" v-model="product.images">-->
-                        <!--<span class="custom-control-indicator"></span>-->
-                        <!--<span class="custom-control-description">-->
-                            <!--<img :src="img.url" :alt="img.original_name" class="">-->
-                        <!--</span>-->
-                    <!--</label>-->
-                        <!--<button type="button" class="btn btn-block btn-primary" @click="triggerNewImgInput">+ Add New Image</button>-->
-                <!--</div>-->
+                <div class="form-group">
+                    <label for="product-featured-img" class="label-control">Featured Image</label>
+                    <div class="input-group xs-mb-15">
+                        <select class="form-control" name="product-featured-img" v-model="article.featured_image_id">
+                            <option v-for="i in images" :value="i.id">{{i.original_name}}</option>
+                        </select>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-primary" @click="triggerNewImgInput">+</button>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -120,12 +95,16 @@
             <div>
                 <form @submit.prevent="save">
                     <div class="form-group">
-                        <label for="username" class="label-control">Name</label>
-                        <input type="text" name="username" class="form-control" v-model="newCat.name">
+                        <label for="catname" class="label-control">Name</label>
+                        <input type="text" name="catname" class="form-control" v-model="newCat.name">
                     </div>
                     <div class="form-group">
-                        <label for="username" class="label-control">Category Icon</label>
-                        <select class="form-control" v-model="newCat.icon_id">
+                        <label for="slug" class="label-control">Slug</label>
+                        <input type="text" name="slug" class="form-control" v-model="newCat.slug">
+                    </div>
+                    <div class="form-group">
+                        <label for="username" class="label-control">Category Featured Image</label>
+                        <select class="form-control" v-model="newCat.featured_image_id">
                             <option v-for="i in images" :value="i.id">{{i.original_name}}</option>
                         </select>
                         <span class="input-group-btn">
@@ -133,12 +112,12 @@
                         </span>
                     </div>
                     <div class="form-group">
-                        <label for="desc" class="label-control">Short Description</label>
-                        <textarea type="text" name="desc" class="form-control" v-model="newCat.description"></textarea>
+                        <label for="desc" class="label-control">Description</label>
+                        <textarea type="text" name="desc" class="form-control editor" v-model="newCat.description_md"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="slug" class="label-control">Slug</label>
-                        <input type="text" name="slug" class="form-control" v-model="newCat.slug">
+                        <label for="desc" class="label-control">Short Description</label>
+                        <textarea type="text" name="desc" class="form-control" v-model="newCat.short_description"></textarea>
                     </div>
                 </form>
             </div>
@@ -154,10 +133,10 @@
     export default {
         mounted() {
             console.log('Product Form ready.');
-            this.postEditor = new simplemde({
+            this.editor = new simplemde({
                 element: document.getElementById("editor")
             });
-            if (this.product.translated) {
+            if (this.article.translated) {
                 this.translateEditor = new simplemde({
                     element: document.getElementById("translate-editor")
                 });
@@ -169,12 +148,11 @@
             this.fetchCategories();
             this.fetchTags();
             this.fetchImages();
-            this.fetchBrands();
-            if (this.mode === 'edit') this.fetchProduct();
+            this.fetchProducts();
+            if (this.mode === 'edit') this.fetchArticle();
         },
         components: {
-            Modal,
-            ImagesList
+            Modal
         },
         props: ['mode', 'productId'],
         data() {
@@ -185,54 +163,66 @@
                     showCreateCategory: false,
                 },
                 api: this.$root.$data.api,
-                postEditor: null,
+                editor: null,
                 //                translateEditor: null,
                 categories: [],
                 tags: [],
-                brands: [],
+                products: [],
                 images: [],
                 newImg: null,
                 newTag: {
                     name: ""
                 },
-                product: {
-                    name: '',
+                article: {
+                    title: '',
                     description_md: '',
+                    short_description: '',
                     category_id: '',
                     featured_image_id: '',
-                    images: [],
-                    brand_id: '',
                     tags: [],
                     slug: '',
-                    price: '',
-                    in_stock: '',
+                    related_products: [],
                     featured: false
                 },
                 newCat: {
                     name: '',
-                    icon_id: '',
+                    featured_image_id: '',
                     slug: '',
-                    description: '',
+                    description_md: '',
+                    short_description: '',
                 }
             };
         },
         methods: {
-            fetchProduct() {
-                axios.get(this.api.getProductById + '/' + this.productId)
+            fetchArticle() {
+                axios.get(this.api.getArticleById + '/' + this.articleId)
                     .then((res) => {
                         // success
-                        this.product = res.data.product;
-                        this.postEditor.value(this.product.description_md);
+                        this.article = res.data.article;
+                        this.editor.value(this.article.description_md);
                     })
                     .catch((error) => {
                         //
                         console.log(error);
-                        swal('Fail', 'Cannot fetch product', 'error');
+                        swal('Fail', 'Cannot fetch article', 'error');
+                    });
+            },
+            fetchProducts() {
+                //
+                axios.get(this.api.getAllProducts)
+                    .then((res) => {
+                        // success
+                        this.products = res.data.allItems;
+                    })
+                    .catch((error) => {
+                        //
+                        console.log(error);
+                        alert('cannot fetch products');
                     });
             },
             fetchCategories() {
                 //
-                axios.get(this.api.getAllCategories)
+                axios.get(this.api.getAllArticleCategories)
                     .then((res) => {
                         // success
                         this.categories = res.data.allItems;
@@ -248,7 +238,7 @@
                 axios.get(this.api.getAllBrands)
                     .then((res) => {
                         // success
-                        this.brands = res.data.allItems;
+                        this.brands = res.data.brands;
                     })
                     .catch((error) => {
                         //
@@ -308,13 +298,13 @@
             },
             createCategory() {
                 // send new category information to server
-                axios.post(this.api.createCategory, this.newCat).then((res) => {
+                axios.post(this.api.createArticleCategory, this.newCat).then((res) => {
                     // success
                     if (res.data.success) {
                         // if success, append new category to categories array
-                        this.categories.push(res.data.newItem);
+                        this.categories.push(res.data.createdItem);
                         // select new category as post category
-                        this.product.category_id = res.data.newItem.id;
+                        this.article.category_id = res.data.createdItem.id;
                         this.triggerCreateCategory();
                     } else {}
                 }).catch((error) => {
@@ -336,8 +326,8 @@
                 axios.post(this.api.createTag, this.newTag)
                     .then((res) => {
                         // success
-                        this.tags.push(res.data.newItem);
-                        this.product.tags.push(res.data.newItem.sanitized);
+                        this.tags.push(res.data.createdItem);
+                        this.article.tags.push(res.data.createdItem.sanitized);
                         this.newTag.name = "";
                     })
                     .catch((error) => {
@@ -347,29 +337,29 @@
                     });
             },
             toggleTag(name) {
-                if (_.indexOf(this.product.tags, name) != -1) {
-                    delete(this.product.tags[_.indexOf(this.product.tags, name)]);
+                if (_.indexOf(this.article.tags, name) != -1) {
+                    delete(this.article.tags[_.indexOf(this.article.tags, name)]);
                 } else {
-                    this.product.tags.push(name);
+                    this.article.tags.push(name);
                 }
             },
-            createProduct() {
+            createArticle() {
                 if (!this.validatePost()) return;
-                this.product.description_md = this.postEditor.value();
-                axios.post(this.api.createProduct, this.product)
+                this.article.description_md = this.editor.value();
+                axios.post(this.api.createArticle, this.article)
                     .then((res) => {
                         // success
                         if (res.data.success) {
-                            this.product = res.data.newItem;
-                            router.push({
-                                name: 'edit-product',
-                                params: {
-                                    productId: this.product.id
-                                }
-                            });
-                            swal('Bravo', 'product has been created successfully', 'success');
+                            this.article = res.data.createdItem;
+                            // router.push({
+                            //     name: 'edit-article',
+                            //     params: {
+                            //         articleId: this.article.id
+                            //     }
+                            // });
+                            swal('Bravo', 'Article has been created successfully', 'success');
                         } else {
-                            swal('Fail', 'Something went wrong, post not saved', 'error');
+                            swal('Fail', 'Something went wrong, article not saved', 'error');
                         }
                     })
                     .catch((error) => {
@@ -377,15 +367,15 @@
                         alert('Network error');
                     });
             },
-            updateProduct() {
+            updateArticle() {
                 if (!this.validatePost()) return;
-                this.product.description_md = this.postEditor.value();
-                axios.post(this.api.updateProduct + this.productId, this.product)
+                this.article.description_md = this.editor.value();
+                axios.post(this.api.updateArticle, this.article)
                     .then((res) => {
                         // success
                         if (res.data.success) {
                             swal('Bravo', 'product has been saved successfully', 'success');
-                            this.product = res.data.updatedItem;
+                            this.article = res.data.updatedItem;
                         } else {
                             swal('Fail', 'Something went wrong, post not saved', 'error');
                         }

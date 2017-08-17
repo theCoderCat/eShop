@@ -10,6 +10,7 @@ use Parsedown;
 class eShopBaseModel extends Model
 {
     //
+    protected $slugRequired;
     protected function getNextIncrement() {
         $table = self::getTable();
         $id = DB::table('INFORMATION_SCHEMA.TABLES')->select('AUTO_INCREMENT as id')->where('TABLE_NAME', $table)->first()->id;
@@ -18,15 +19,16 @@ class eShopBaseModel extends Model
 
     // process category slug
     public function setSlugAttribute($value)
-    {
-        $slugRequired = Schema::hasColumn(self::getTable(), 'slug');
-        if (!$slugRequired) return;
-        
-        if (empty($value)) {
+    {   
+        // $this->slugRequired = Schema::hasColumn(self::getTable(), 'slug');
+        // if (!$this->slugRequired) return;
+        $value = str_slug($value);
+
+        if (empty($value) && isset($this->attributes['name'])) {
             $value = str_slug($this->attributes['name']);
         }
 
-        if (empty($value)) {
+        if (empty($value) && isset($this->attributes['title'])) {
             $value = str_slug($this->attributes['title']);
         }
         
@@ -45,15 +47,32 @@ class eShopBaseModel extends Model
         
     }
 
+    // process sanitized tag
+    public function setSanitizedAttribute($value)
+    {
+        $this->attributes['sanitized'] = str_slug($value, '_');
+
+    }
+
     public static function boot()
     {
         parent::boot();
 
         self::creating(function($model){
+            // generate html from md
             if (isset($model->description_md) && !empty($model->description_md)) {
                 $Parsedown = new Parsedown;
                 $model->description_html = $Parsedown->text($model->description_md);
             }
+            
+            // generate slug if needed
+            $slugRequired = Schema::hasColumn($model->getTable(), 'slug');
+            if ($slugRequired && !isset($model->slug)) $model->setSlugAttribute('');
+
+            // // generate santinized value if needed
+            // $santinizedRequired = Schema::hasColumn($model->getTable(), 'santinized');
+            // if ($santinizedRequired && !isset($model->santinized)) $model->setSanitizedAttribute('');
+            
         });
 
         self::created(function($model){

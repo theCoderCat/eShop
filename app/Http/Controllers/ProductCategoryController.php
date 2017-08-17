@@ -8,6 +8,15 @@ use App\User;
 
 class ProductCategoryController extends Controller
 {
+    public function __construct() {
+        self::$baseModel = 'App\ProductCategory';
+        $this->fieldsToFill = [
+            'name',
+            'slug',
+            'description',
+            'icon_id',
+        ];
+    }
     /**
      * Display a listing of the resource.
      *
@@ -16,6 +25,16 @@ class ProductCategoryController extends Controller
     public function index()
     {
         //
+    }
+
+    public function getAll() {
+        $all = parent::getAll();
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => true,
+                'allItems' => $all
+            ]);
+        }
     }
 
     /**
@@ -37,18 +56,11 @@ class ProductCategoryController extends Controller
     public function store(Request $request)
     {
         //
-        $newCat = new ProductCategory;
-        $data = $request->all();
-
-        foreach ($data as $key => $value) {
-            $newCat->$key = $value;
-        }
-
-        $result = $newCat->save();
+        $newItem = parent::store($request);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
-                'success' => $result,
-                'cat' => $newCat
+                'success' => true,
+                'newItem' => $newItem
             ]);
         }
     }
@@ -85,6 +97,13 @@ class ProductCategoryController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $item = parent::update($request, $id);
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => true,
+                'updatedItem' => $item
+            ]);
+        }
     }
 
     /**
@@ -96,15 +115,5 @@ class ProductCategoryController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function getAll(Request $request) {
-        $allCats = ProductCategory::all();
-        if (config('res.onlyJson') || config('res.isJson')) {
-            return response()->json([
-                'success' => true,
-                'cats' => $allCats,
-            ]);
-        }
     }
 }

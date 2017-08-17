@@ -8,31 +8,36 @@ use Parsedown;
 
 class ProductController extends Controller
 {
-    protected $fieldToFill = [
-        'brand_id',
-        'category_id',
-        'description_md',
-        'featured_image_id',
-        'images',
-        'name',
-        'slug',
-        'tags',
-        'price',
-        'in_stock'
-    ];
+    public function __construct() {
+        self::$baseModel = 'App\Product';
+        $this->fieldsToFill = [
+            'brand_id',
+            'category_id',
+            'description_md',
+            'featured_image_id',
+            'images',
+            'name',
+            'slug',
+            'tags',
+            'price',
+            'in_stock'
+        ];
 
-    protected $fieldToShow = [
-        'brand',
-        'description_html',
-        'product_images',
-        'featured_image',
-        'name',
-        'slug',
-        'tags',
-        'price',
-        'in_stock',
-        'category',
-    ];
+        $this->fieldsToShow = [
+            'id',
+            'brand_id',
+            'description_html',
+            'images',
+            'featured_image_id',
+            'name',
+            'slug',
+            'tags',
+            'price',
+            'in_stock',
+            'category_id',
+        ];
+        $this->relationToShow = ['featured_image'];
+    }
     /**
      * Display a listing of the resource.
      *
@@ -43,13 +48,13 @@ class ProductController extends Controller
         //
     }
 
-    public function getAll(Request $request) {
+    public function getAll() {
         //
-        $allProducts = Product::with('brand')->get();
+        $allProducts = parent::getAll();
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
                 'success' => true,
-                'products' => $allProducts,
+                'allItems' => $allProducts,
             ]);
         }
     }
@@ -72,11 +77,12 @@ class ProductController extends Controller
     }
 
     public function getBySlug($slug, Request $request) {
-        $res = Product::where('slug', $slug)->firstOrFail();
-        $product = (object)[];
-        foreach ($this->fieldToShow as $key) {
-            $product->$key = $res->$key;
-        }
+        $product = Product::select($this->fieldsToShow)->where('slug', $slug)->with($this->relationToShow)->firstOrFail();
+//        $product = (object)[];
+//        foreach ($this->fieldsToShow as $key) {
+//            $product->$key = $res->$key;
+//        }
+        // dd($product);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
                 'success' => true,
@@ -105,20 +111,11 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         //
-        $newProduct = new Product;
-        $dataToSave = $request->except('isJSON');
-        foreach ($this->fieldToFill as $key) {
-            if (isset($dataToSave[$key])) {
-                $product->$key = $dataToSave[$key];
-            }
-        }
-        $Parsedown = new Parsedown;
-        $newProduct->description_html = $Parsedown->text($newProduct->description_md);
-        $success = $newProduct->save();
+        $newItem = parent::store($request);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
                 'success' => $success,
-                'product' => $newProduct,
+                'newItem' => $newItem,
             ]);
         }
     }
@@ -152,25 +149,14 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         //
-        $id = $request->id;
-        $product = Product::findorfail($id);
-        $dataToSave = $request->except(['isJSON', 'id']);
-        
-        foreach ($this->fieldToFill as $key) {
-            if (isset($dataToSave[$key])) {
-                $product->$key = $dataToSave[$key];
-            }
-        }
-        $Parsedown = new Parsedown;
-        $product->description_html = $Parsedown->text($product->description_md);
-        $success = $product->save();
+        $item = parent::update($request, $id);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
-                'success' => $success,
-                'product' => $product,
+                'success' => true,
+                'updatedItem' => $item,
             ]);
         }
     }

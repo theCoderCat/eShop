@@ -7,6 +7,14 @@ use App\Tag;
 
 class TagController extends Controller
 {
+    public function __construct() {
+        self::$baseModel = 'App\Tag';
+        $this->fieldsToFill = [
+            'name',
+            'sanitized',
+            'description',
+        ];
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,15 +25,13 @@ class TagController extends Controller
         //
     }
 
-    public function getAll(Request $request) {
-        $allTags = Tag::all();
+    public function getAll() {
+        $all = parent::getAll();
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
                 'success' => true,
-                'tags' => $allTags,
+                'allItems' => $all,
             ]);
-        } else {
-            return $allTags;
         }
     }
 
@@ -47,21 +53,12 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $newTag = new Tag;
-        $data = $request->except('isJSON');
-
-        foreach ($data as $key => $value) {
-            $newTag->$key = $value;
-        }
-
-        $newTag->sanitized = $newTag->name;
-
-        $result = $newTag->save();
+        $this->dataToSave['sanitized'] = $request->name;
+        $newItem = parent::store($request);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
-                'success' => $result,
-                'tag' => $newTag
+                'success' => $success,
+                'newItem' => $newItem,
             ]);
         }
     }
@@ -98,6 +95,13 @@ class TagController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $item = parent::update($request, $id);
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => $success,
+                'updatedItem' => $item,
+            ]);
+        }
     }
 
     /**

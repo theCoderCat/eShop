@@ -15,18 +15,14 @@ class Brand extends eShopBaseModel
         'logo_id',
     ];
 
-    protected $appends = ['url', 'logo'];
+    protected $appends = ['url'];
 
-    public function getUrlAttribute($value)
+    public function getUrlAttribute()
     {
         return route('get-brand-by-slug', ['slug' => $this->attributes['slug']]);
     }
 
-    public function getLogoAttribute($value) {
-        return $this->logo_image ? $this->logo_image : null;
-    }
-
-    public function logo_image()
+    public function logo()
     {
         return $this->hasOne('App\File', 'id', 'logo_id')->select('id', 'original_name');
     }

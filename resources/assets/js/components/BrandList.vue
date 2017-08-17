@@ -29,7 +29,7 @@
                                 <a href="#" target="_blank">{{b.slug}}</a>
                             </td>
                             <td>
-                                <img :src="b.logo.url" class="brand-logo" alt="b.logo.name">
+                                <img :src="b.logo.url" class="brand-logo" :alt="b.logo.name" v-if="b.logo">
                             </td>
                             <td>
                                 <!--<router-link :to="{ name: 'edit-brand', params: { brandId: b.id } }" class="btn btn-primary mb-xs-10">Edit</router-link>-->
@@ -57,15 +57,7 @@
                         <input type="text" name="slug" class="form-control" v-model="brand.slug">
                     </div>
                     <div class="form-group">
-                        <label for="logo-select" class="label-control">Logo</label>
-                        <div class="input-group">
-                            <select class="form-control" name="logo-select" v-model="brand.logo_id">
-                                <option v-for="i in images" :value="i.id">{{i.original_name}}</option>
-                            </select>
-                            <span class="input-group-btn">
-                                <button type="button" class="btn btn-primary" @click="triggerNewImgInput">+</button>
-                            </span>
-                        </div>
+                        <ImagesList v-bind:selected-image-id="brand.logo_id" v-model="brand.logo_id" type="single"></ImagesList>
                     </div>
                     <div class="form-group">
                         <label for="desc" class="label-control">Short Description</label>
@@ -79,9 +71,6 @@
                 <button class="btn btn-default" @click="discardBrand">Cancel</button>
             </div>
         </modal>
-
-        <input type="file" @change="uploadImage" class="new-img-input hidden">
-
     </div>
 </template>
 <script>
@@ -96,10 +85,10 @@
             // fetch the data when the view is created and the data is
             // already being observed
             this.fetchBrands();
-            this.fetchImages();
         },
         components: {
-            Modal
+            Modal,
+            ImagesList
         },
         data() {
             return {
@@ -112,7 +101,7 @@
                 mode: 'create',
                 api: this.$root.$data.api,
                 brands: [],
-                images: [],
+                editingBrandIndex: -1,
                 brand: {
                     name: '',
                     logo_id: '',
@@ -127,7 +116,7 @@
                 axios.get(this.api.getAllBrands)
                     .then((res) => {
                         // success
-                        this.brands = res.data.brands;
+                        this.brands = res.data.allItems;
                     })
                     .catch((error) => {
                         //
@@ -148,24 +137,12 @@
                 }
             },
 
-            fetchImages() {
-                // get all images
-                axios.get(this.api.getAllImages)
-                    .then((res) => {
-                        // success
-                        this.images = res.data.files;
-                    })
-                    .catch((error) => {
-                        //
-                        console.log(error);
-                        alert('cannot fetch images');
-                    });
-            },
-
             updateBrand() {
                 this.brand.description_md = this.editor.value();
-                axios.put(this.api.updateBrand, this.brand)
+                axios.put(this.api.updateBrand + this.brand.id, this.brand)
                     .then((res) => {
+                        var editingBrandIndex = _.findIndex(this.brands, { id: res.data.updatedItem.id });
+                        this.brands[editingBrandIndex] = res.data.updatedItem;
                         this.discardBrand();
                         swal('Bravo', 'Brand has been updated', 'success');
                     })
@@ -194,43 +171,22 @@
                     description_md: '',
                     slug: '',
                 };
+                this.editingBrandIndex = -1;
                 this.triggerBrandForm();
             },
 
             triggerBrandForm(brandId) {
                 if (typeof (brandId) == 'number') {
-                    this.brand = _.findWhere(this.brands, {
+                    // make a copy
+                    this.brand = _.assign({}, _.find(this.brands, {
                         id: brandId
-                    });
+                    }));
                     this.mode = 'edit';
                 } else {
                     this.mode = 'create';
                 }
                 this.modals.showBrandForm = !this.modals.showBrandForm;
-                this.editor.value(this.brand.description_md)
-            },
-
-            triggerNewImgInput() {
-                $('.new-img-input').trigger('click');
-            },
-
-            uploadImage(callback) {
-                // get image data
-                let data = new FormData();
-                data.append('img', document.querySelector('.new-img-input').files[0]);
-                axios.post(this.api.uploadNewImage, data)
-                    .then((res) => {
-                        // success
-                        this.images.push(res.data.file);
-                        console.log(res);
-                        if (typeof (callback) == 'function') {
-                            callback();
-                        }
-                    })
-                    .catch((error) => {
-                        //
-                        console.log(error);
-                    });
+                setTimeout(this.editor.value(this.brand.description_md), 1000);
             },
         }
     }

@@ -1,6 +1,6 @@
 @extends('admin.default-layout')
 <!--  -->
-@section('title', 'eShop | Admin page')
+@section('title', 'Admin page')
 <!-- Content Start -->
 @section('content')
 <!-- ============================================================== -->

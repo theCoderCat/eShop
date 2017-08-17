@@ -3,4 +3,34 @@
     width: 240px;
     top: 50px;
     left: 0;
+    padding: 20px;
+}
+
+.sidebar-elements {
+    display: block;
+    list-style: none;
+    padding: 0;
+
+    li a {
+        padding: 10px 5px;
+        display: block;
+
+        &.active {
+            color: $brand-success;
+        }
+    }
+
+    .submenu {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.4s ease;
+        
+        li {
+            list-style: none;
+        }
+    }
+
+    .has-sub.active .submenu {
+        max-height: 10000px;
+    }
 }

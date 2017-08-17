@@ -3,13 +3,9 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\eShopBaseModel;
 
-class Tag extends Model
+class Tag extends eShopBaseModel
 {
-    // process sanitized tag
-    public function setSanitizedAttribute($value)
-    {
-        $this->attributes['sanitized'] = str_slug($value, '_');
-
-    }
+    
 }

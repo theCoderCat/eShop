@@ -8,6 +8,25 @@ use App\Brand;
 
 class BrandController extends Controller
 {
+    
+    public function __construct() {
+        self::$baseModel = 'App\Brand';
+        $this->fieldsToFill = [
+            'name',
+            'slug',
+            'description_md',
+            'logo_id',
+        ];
+        $this->fieldsToShow = [
+            'id',
+            'name',
+            'slug',
+            'logo_id',
+            'description_md',
+        ];
+        $this->relationToShow = ['logo'];
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -24,11 +43,11 @@ class BrandController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function getAll() {
-        $all = Brand::all();
+        $all = parent::getAll();
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
                 'success' => true,
-                'brands' => $all,
+                'allItems' => $all,
             ]);
         }
     }
@@ -52,24 +71,11 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         //
-        $fieldsToFill = [
-            'name',
-            'slug',
-            'description_md',
-            'logo_id',
-        ];
-
-        $dataToSave = $request->only($fieldsToFill);
-        $brand = new Brand;
-        foreach ($fieldsToFill as $key ) {
-            $brand->$key = $dataToSave[$key];
-        }
-        $success = $brand->save();
-        $brand = Brand::findOrFail($brand->id);
+        $newItem = parent::store($request);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
-                'success' => $success,
-                'brand' => $brand
+                'success' => true,
+                'newItem' => $newItem
             ]);
         }
     }
@@ -106,20 +112,11 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         //
-        $fieldsToFill = [
-            'name',
-            'slug',
-            'description_md',
-            'logo_id',
-        ];
-
-        $dataToSave = $request->only($fieldsToFill);
-        $brand = Brand::findOrFail($request->id);
-        $brand->update($dataToSave);
+        $item = parent::update($request, $id);
         if (config('res.onlyJson') || config('res.isJson')) {
             return response()->json([
-                'success' => $brand ? true : false,
-                'brand' => $brand
+                'success' => $item ? true : false,
+                'updatedItem' => $item
             ]);
         }
     }

@@ -15,9 +15,10 @@ class CreateArticleCategoriesTable extends Migration
     {
         Schema::create('article_categories', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('title');
+            $table->text('name');
             $table->string('slug')->unique();
-            $table->text('description')->nullable();
+            $table->text('description_md')->nullable();
+            $table->text('description_html')->nullable();
             $table->text('short_description')->nullable();
             $table->integer('featured_image_id')->unsigned()->nullable()->nullable();
             $table->boolean('active')->default(true);

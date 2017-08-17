@@ -3,9 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\ArticleCategory;
 
 class ArticleCategoryController extends Controller
 {
+    public function __construct() {
+        self::$baseModel = 'App\ArticleCategory';
+        $this->fieldsToFill = [
+            'name',
+            'slug',
+            'description_md',
+            'featured_image_id'
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,6 +25,16 @@ class ArticleCategoryController extends Controller
     public function index()
     {
         //
+    }
+
+    public function getAll() {
+        $all = parent::getAll();
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => true,
+                'allItems' => $all
+            ]);
+        }
     }
 
     /**
@@ -34,7 +55,13 @@ class ArticleCategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $newItem = parent::store($request);
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => $success,
+                'newItem' => $newItem
+            ]);
+        }
     }
 
     /**
@@ -68,7 +95,13 @@ class ArticleCategoryController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $item = parent::update($request, $id);
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => $item ? true : false,
+                'updatedItem' => $item
+            ]);
+        }
     }
 
     /**

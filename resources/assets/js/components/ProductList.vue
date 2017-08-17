@@ -11,7 +11,7 @@
                 <table class="table product-table">
                     <thead>
                         <tr>
-                            <td>ID</td>
+                            <td></td>
                             <td>Name</td>
                             <td>Price</td>
                             <td>In Stock</td>
@@ -21,11 +21,11 @@
                     </thead>
                     <tbody>
                         <tr v-for="p in products">
-                            <td>{{p.id}}</td>
+                            <td><img v-if="p.featured_image" :src="p.featured_image.url" alt="" class="featured-img"></td>
                             <td><a :href="p.url" target="_blank">{{p.name}}</a></td>
                             <td>{{p.price}}</td>
                             <td>{{p.in_stock}}</td>
-                            <td><img class="brand-logo" v-if="p.brand" :src="p.brand.logo.url"></td>
+                            <td><img class="brand-logo" v-if="p.brand_logo" :src="p.brand_logo.url"></td>
                             <td>
                                 <router-link :to="{ name: 'edit-product', params: { productId: p.id } }" class="btn btn-primary mb-xs-10">Edit</router-link>
                                 <a href="" class="btn btn-danger">x Delete</a>
@@ -67,7 +67,7 @@
                 axios.get(this.api.getAllProducts)
                     .then((res) => {
                         // success
-                        this.products = res.data.products;
+                        this.products = res.data.allItems;
                     })
                     .catch((error) => {
                         //

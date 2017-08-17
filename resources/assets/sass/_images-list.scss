@@ -1,0 +1,30 @@
+.images-list-container {
+  max-width: 100%;
+
+  .custom-control.custom-checkbox {
+    height: 50px;
+    margin: 2px;
+
+    input[type=radio], input[type=checkbox] {
+      display: none;
+    }
+
+    .custom-control-description {
+      border: 2px solid transparent;
+      padding: 2px;
+      height: 100%;
+      display: block;
+    }
+
+    input[type=radio]:checked, input[type=checkbox]:checked {
+      &+.custom-control-description {
+        border: 2px solid $brand-primary;
+      }
+    }
+
+    .custom-control-description img {
+      height: 100%;
+      width: auto;
+    }
+  }
+}

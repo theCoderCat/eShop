@@ -18,6 +18,7 @@ const Home = require('./components/Home.vue');
 const ProductForm = require('./components/ProductForm.vue');
 const ProductList = require('./components/ProductList.vue');
 const BrandList = require('./components/BrandList.vue');
+const ArticleForm = require('./components/ArticleForm.vue');
 /* Define components - END */
 
 const routes = [{
@@ -43,28 +44,51 @@ const routes = [{
         productId: route.params.productId,
         mode: "edit"
     })
-},{
+}, {
     name: 'brands',
     path: '/brands',
     component: BrandList,
-}];
+}, {
+    name: 'create-article',
+    path: '/article/new',
+    component: ArticleForm,
+    props: {
+        mode: "create"
+    }
+},];
 
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 window.router = new VueRouter({
-    routes
+    routes,
+    linkActiveClass: 'active'
 });
 
-const sidebarLinks = [{
-    title: 'Home',
-    routeName: 'home',
-}, {
-    title: 'Product',
-    routeName: 'product-list',
-}, {
-    title: 'Brand',
-    routeName: 'brands',
-}];
+const sidebarLinks = [
+    {
+        title: "Product Management",
+        routeName: false,
+        isActive: true,
+        submenu: [
+            {
+                title: 'Product',
+                routeName: 'product-list',
+            }, {
+                title: 'Brand',
+                routeName: 'brands',
+            }, {
+                title: 'Create Article',
+                routeName: 'create-article',
+            }
+        ]
+    },
+    // {
+    //     title: "Store Information",
+    //     routeName: false,
+    //     isActive: false,
+    //     submenu: [],
+    // }
+];
 
 const api = {
     'getAllCategories': 'categories',
@@ -76,11 +100,16 @@ const api = {
     'createTag': 'tag/create',
     'getAllTags': 'tags',
     'getProductById': 'product/id',
-    'updateProduct': 'product/update',
+    'updateProduct': 'product/update/',
     'getAllBrands': 'brands',
     'createBrand': 'brands/store',
-    'updateBrand': 'brands/update',
-    'getAllProducts': 'products'
+    'updateBrand': 'brands/update/',
+    'getAllProducts': 'products',
+    'createArticle': 'articles/store',
+    'getAllArticles': 'articles',
+    'getArticleById': 'articles/id',
+    'getAllArticleCategories': 'article-categories/',
+    'createArticleCategory': 'article-categories/store',
 };
 
 var App = new Vue({
@@ -90,5 +119,22 @@ var App = new Vue({
             sidebarLinks: sidebarLinks,
             api: api,
         };
+    },
+
+    methods: {
+        toggleSubmenu: function(index) {
+            let _this = this;
+            if (this.sidebarLinks[index].isActive) {
+                this.sidebarLinks[index].isActive = false;
+            } else {
+                let currentActiveIndex = _.findIndex(this.sidebarLinks, function (o) {
+                    return o.isActive
+                });
+                if (currentActiveIndex !== -1) {
+                    this.sidebarLinks[currentActiveIndex].isActive = false;
+                }
+                this.sidebarLinks[index].isActive = true;
+            }
+        }
     }
 }).$mount('#app');

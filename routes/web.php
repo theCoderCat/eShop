@@ -33,11 +33,21 @@ Route::group(['prefix' => 'api', 'middleware' => 'onlyJson'], function() {
     Route::post('/product/create', 'ProductController@store');
     Route::get('/products', 'ProductController@getAll');
     Route::get('/product/id/{id}', 'ProductController@getById');
-    Route::post('/product/update', 'ProductController@update');
+    Route::post('/product/update/{id}', 'ProductController@update');
     
     Route::resource('brands', 'BrandController');
     Route::get('/brands', 'BrandController@getAll');
     Route::post('/brands/store', 'BrandController@store');
+    Route::put('/brands/update/{id}', 'BrandController@update');
+    Route::post('/brands/update/{id}', 'BrandController@update');
+
+    Route::resource('article-categories', 'ArticleCategoryController');
+    Route::get('/article-categories', 'ArticleCategoryController@getAll');
+    Route::post('/article-categories/store', 'ArticleCategoryController@store');
+
+    Route::resource('articles', 'ArticleController');
+    Route::post('/articles/store', 'ArticleController@store');
+    Route::get('/articles/id/{id}', 'ArticleController@getById');
 });
 
 Auth::routes();

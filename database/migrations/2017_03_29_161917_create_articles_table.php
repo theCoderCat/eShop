@@ -17,8 +17,10 @@ class CreateArticlesTable extends Migration
             $table->increments('id');
             $table->text('title');
             $table->string('slug')->unique();
-            $table->text('description')->nullable();
+            $table->text('description_md')->nullable();
+            $table->text('description_html')->nullable();
             $table->text('short_description')->nullable();
+            $table->string('tags')->nullable();
             $table->integer('featured_image_id')->unsigned()->nullable();
             $table->boolean('active')->default(true);
             $table->text('tag_title')->nullable();

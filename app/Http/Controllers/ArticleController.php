@@ -3,9 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Article;
 
 class ArticleController extends Controller
 {
+
+    public function __construct() {
+        self::$baseModel = 'App\Article';
+        $this->fieldsToFill = [
+            'title',
+            'slug',
+            'description_md',
+            'short_description',
+            'featured_image_id',
+            'related_products',
+            'tags',
+        ];
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,6 +28,26 @@ class ArticleController extends Controller
     public function index()
     {
         //
+    }
+
+    public function getAll() {
+        $all = parent::getAll();
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => true,
+                'allItems' => $all
+            ]);
+        }
+    }
+
+    public function getById($id) {
+        $article = Article::findOrFail($id);
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => true,
+                'article' => $article
+            ]);
+        }
     }
 
     /**
@@ -34,8 +68,21 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $newItem = parent::store($request);
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => $success,
+                'newItem' => $newItem
+            ]);
+        }
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
 
     /**
      * Display the specified resource.
@@ -69,6 +116,13 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $item = parent::update($request, $id);
+        if (config('res.onlyJson') || config('res.isJson')) {
+            return response()->json([
+                'success' => $item ? true : false,
+                'updatedItem' => $item
+            ]);
+        }
     }
 
     /**

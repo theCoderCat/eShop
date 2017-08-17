@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
-    <title>eShop - @yield('title')</title>
+    <title>eShop | @yield('title')</title>
     <!-- animation CSS -->
     <link href="/css/animate.css" rel="stylesheet">
     @yield('customStylesheets')
