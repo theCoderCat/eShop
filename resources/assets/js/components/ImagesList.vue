@@ -9,7 +9,6 @@
             </span>
         </label>
         <button type="button" class="btn btn-block btn-primary" @click="triggerNewImgInput">+ Add New Image</button>
-        <input type="file" @change="uploadImage" class="new-img-input hidden">
     </div>
 </template>
 <script>
@@ -47,13 +46,22 @@
             },
 
             triggerNewImgInput() {
-                $('.new-img-input').trigger('click');
+//                $('.new-img-input').trigger('click');
+                let _this = this;
+                let input = document.createElement('input');
+                input.type = 'file';
+                // multiple upload or not
+//                input.
+                input.click();
+                input.addEventListener('change', function() {
+                    let data = new FormData();
+                    data.append('img', input.files[0]);
+                    _this.uploadImage(data);
+                });
             },
 
-            uploadImage(callback) {
+            uploadImage(data, callback) {
                 // get image data
-                let data = new FormData();
-                data.append('img', document.querySelector('.new-img-input').files[0]);
                 axios.post(this.$root.$data.api.uploadNewImage, data)
                     .then((res) => {
                         // success
@@ -80,7 +88,6 @@
         watch: {
             'localSelectedImgID': function() {
                 this.$emit('input', this.localSelectedImgID);
-                console.log(['logoid: ', this.localSelectedImgID]);
             },
 
             selectedImageId: function(val, oldVal) {

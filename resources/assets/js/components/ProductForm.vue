@@ -12,7 +12,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">New Product</div>
                     <div class="panel-body">
-                        <form action="" @submit="createProduct">
+                        <form action="" @submit.prevent="">
                             <div class="row">
                                 <div class="form-group col-sm-6">
                                 <label for="" class="label-control">Name</label>
@@ -87,29 +87,10 @@
                 <div class="form-group">
                     <label for="product-featured-img" class="label-control">Featured Image</label>
                     <ImagesList v-bind:selected-image-id="product.featured_image_id" v-model="product.featured_image_id" type="single"></ImagesList>
-
-                    <!--<div class="input-group xs-mb-15">-->
-                        <!--<select class="form-control" name="product-featured-img" v-model="product.featured_image_id">-->
-                            <!--<option v-for="i in images" :value="i.id">{{i.original_name}}</option>-->
-                        <!--</select>-->
-                        <!--<span class="input-group-btn">-->
-                            <!--<button type="button" class="btn btn-primary" @click="triggerNewImgInput">+</button>-->
-                        <!--</span>-->
-                    <!--</div>-->
                 </div>
 
                 <label for="product-img" class="label-control">Product Images</label>
                 <ImagesList v-bind:selected-image-id="product.images" v-model="product.images" type="multiple"></ImagesList>
-                <!--<div class="form-group xs-mb-15 product-img-list">-->
-                    <!--<label class="custom-control custom-checkbox" v-for="img in images">-->
-                        <!--<input type="checkbox" class="custom-control-input" :value="img.id" v-model="product.images">-->
-                        <!--<span class="custom-control-indicator"></span>-->
-                        <!--<span class="custom-control-description">-->
-                            <!--<img :src="img.url" :alt="img.original_name" class="">-->
-                        <!--</span>-->
-                    <!--</label>-->
-                        <!--<button type="button" class="btn btn-block btn-primary" @click="triggerNewImgInput">+ Add New Image</button>-->
-                <!--</div>-->
             </div>
         </div>
 
@@ -125,12 +106,7 @@
                     </div>
                     <div class="form-group">
                         <label for="username" class="label-control">Category Icon</label>
-                        <select class="form-control" v-model="newCat.icon_id">
-                            <option v-for="i in images" :value="i.id">{{i.original_name}}</option>
-                        </select>
-                        <span class="input-group-btn">
-                            <button type="button" class="btn btn-primary" @click="triggerNewImgInput">+</button>
-                        </span>
+                        <ImagesList v-bind:selected-image-id="newCat.icon_id" v-model="newCat.icon_id" type="single"></ImagesList>
                     </div>
                     <div class="form-group">
                         <label for="desc" class="label-control">Short Description</label>
@@ -147,7 +123,6 @@
                 <button class="btn btn-default" @click="discardCategory">Cancel</button>
             </div>
         </modal>
-        <input type="file" @change="uploadImage" class="new-img-input hidden">
     </div>
 </template>
 <script>
@@ -282,27 +257,27 @@
                         alert('cannot fetch tags');
                     });
             },
-            triggerNewImgInput() {
-                $('.new-img-input').trigger('click');
-            },
-            uploadImage(callback) {
-                // get image data
-                let data = new FormData();
-                data.append('img', document.querySelector('.new-img-input').files[0]);
-                axios.post(this.api.uploadNewImage, data)
-                    .then((res) => {
-                        // success
-                        this.images.push(res.data.file);
-                        console.log(res);
-                        if (typeof (callback) == 'function') {
-                            callback();
-                        }
-                    })
-                    .catch((error) => {
-                        //
-                        console.log(error);
-                    });
-            },
+//            triggerNewImgInput() {
+//                $('.new-img-input').trigger('click');
+//            },
+//            uploadImage(callback) {
+//                // get image data
+//                let data = new FormData();
+//                data.append('img', document.querySelector('.new-img-input').files[0]);
+//                axios.post(this.api.uploadNewImage, data)
+//                    .then((res) => {
+//                        // success
+//                        this.images.push(res.data.file);
+//                        console.log(res);
+//                        if (typeof (callback) == 'function') {
+//                            callback();
+//                        }
+//                    })
+//                    .catch((error) => {
+//                        //
+//                        console.log(error);
+//                    });
+//            },
             triggerCreateCategory() {
                 this.modals.showCreateCategory = !this.modals.showCreateCategory;
             },
